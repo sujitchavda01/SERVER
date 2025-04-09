@@ -1,0 +1,165 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.footer {
+    border-top: 1px solid #63a1e3;
+    padding: 0; 
+    color: #333;
+    font-size: 13px;
+    box-sizing: border-box; 
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding-bottom: 70px;
+    padding-top: 40px;
+}
+
+
+.footer-section {
+    padding-top: 10px;
+    width: 23%;
+    min-width: 250px;
+}
+
+.logo {
+    padding-top: 10px;
+    width: 140px;
+    margin-bottom: 10px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.social-icons  {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.links ul li {
+    margin-bottom: 5px;
+}
+
+.links ul li a {
+    text-decoration: none;
+    color: #0056b3;
+    font-weight: bold;
+}
+
+.developers h3{
+    color: #002f6c;
+    font-size: 18px;
+}
+
+.developers a{
+    color: #333;
+    font-weight: normal;
+}
+
+
+/* .footer-bottom {
+    text-align: center;
+    padding: 10px 0; 
+    border-top: 1px solid #333;
+    font-size: 13px;
+    background-color: #d5dde7; 
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box; 
+} */
+.footer-bottom {
+    background-color:  RGB(240, 245, 251); /* Light background */
+    text-align: center;
+    padding-top: 32px;
+    font-size: 13px;
+    color: #6c757d; 
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid #63a1e3;
+    height: 80px;
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+.footer-bottom strong {
+    color: #002e6e; /* Dark blue for university name */
+}
+
+
+/* .footer-bottom a {
+    text-decoration: none;
+    color: #0056b3;
+    font-weight: bold;
+} */
+
+
+.developers {
+    
+    margin-top: 20px;
+}
+
+.developers h3 {
+    color: #002f6c;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.developer-list {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;
+}
+
+.developer-list a {
+    display: flex;
+    gap: 10px;
+    text-decoration: none;
+    color: #333;
+    font-size: 15.7px;
+    font-weight: 545;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+    background: transparent;
+   
+}
+
+
+
+.linkedin-icon {
+    color: #0056b3;
+    transition: all 0.3s ease-in-out;
+}
+
+
+/* .developers p{
+    font-weight: bold;
+} */
+
+.developers p{
+    /* text-align: start; */
+    /* margin-bottom: 30px; */
+    font-size: 15.7px;
+    font-weight: 545;
+}
+.footer-bottom p{
+    text-align: center;
+}
