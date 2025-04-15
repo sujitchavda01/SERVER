@@ -21,7 +21,7 @@ const EvaluatorPapers = () => {
     const fetchAssignedPapers = async () => {
       try {
         const response = await fetch(
-          "http://69.62.76.50:5000/api/assigned-papers",
+          "https://backend.picet.in/api/assigned-papers",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -81,7 +81,7 @@ const EvaluatorPapers = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Unauthorized: No token found");
   
-      const response = await fetch("http://69.62.76.50:5000/api/download-report", {
+      const response = await fetch("https://backend.picet.in/api/download-report", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -105,7 +105,7 @@ const EvaluatorPapers = () => {
   const handleViewFile = async (filename) => {
     try {
       const response = await fetch(
-        `http://69.62.76.50:5000/api/get-paper/${filename}`,
+        `https://backend.picet.in/api/get-paper/${filename}`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },

@@ -145,7 +145,7 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
 // in above route if email is send for forgot password after this need to reset the password 
 // So from frount end we need url like 
-// http://69.62.76.50:3000/reset-password/bd56838af17791daa7f15d29daac559dcf90a19f2c2f1530cae0e46ebdc61ed6
+// https://evaluation.picet.in/reset-password/bd56838af17791daa7f15d29daac559dcf90a19f2c2f1530cae0e46ebdc61ed6
 // and we also need to pass the password in body 
 
 // Route to delete user account

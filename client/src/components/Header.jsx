@@ -44,7 +44,7 @@ const Header = () => {
         }
 
         const response = await axios.post(
-          "http://69.62.76.50:5000/api/assign-evaluator",
+          "https://backend.picet.in/api/assign-evaluator",
           formData,
           {
             headers: {
@@ -65,7 +65,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://69.62.76.50:5000/api/logout");
+      await axios.post("https://backend.picet.in/api/logout");
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       localStorage.removeItem("user");

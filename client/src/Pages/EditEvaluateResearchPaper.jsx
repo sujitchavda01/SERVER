@@ -17,7 +17,7 @@ const EditResearchPaperRating = () => {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('Unauthorized: No token found');
 
-                const response = await fetch('http://69.62.76.50:5000/api/assigned-papers', {
+                const response = await fetch('https://backend.picet.in/api/assigned-papers', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ const EditResearchPaperRating = () => {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Unauthorized: No token found');
 
-            const response = await fetch('http://69.62.76.50:5000/api/edit-rating', {
+            const response = await fetch('https://backend.picet.in/api/edit-rating', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

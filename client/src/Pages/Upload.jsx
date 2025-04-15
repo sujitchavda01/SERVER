@@ -52,7 +52,7 @@ const UploadResearchPaper = () => {
 
     try {
       const response = await fetch(
-        "http://69.62.76.50:5000/api/upload-research-paper",
+        "https://backend.picet.in/api/upload-research-paper",
         {
           method: "POST",
           body: formDataToSend,

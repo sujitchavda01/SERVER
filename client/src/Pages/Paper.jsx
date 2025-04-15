@@ -21,7 +21,7 @@ const Paper = () => {
 
     const fetchPapers = async () => {
       try {
-        const response = await fetch("http://69.62.76.50:5000/api/get-paper-details", {
+        const response = await fetch("https://backend.picet.in/api/get-paper-details", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const Paper = () => {
         const statusMapping = {};
         await Promise.all(data.map(async (paper) => {
           try {
-            const res = await fetch(`http://69.62.76.50:5000/api/check-if-rated/${paper.rid}`, {
+            const res = await fetch(`https://backend.picet.in/api/check-if-rated/${paper.rid}`, {
               method: "GET",
               headers: { Authorization: `Bearer ${token}` },
             });
@@ -72,7 +72,7 @@ const Paper = () => {
   const handleDownload = async (filename) => {
     if (!token) return alert("Unauthorized! Please log in.");
     try {
-      const response = await fetch(`http://69.62.76.50:5000/api/get-paper//${filename}`, {
+      const response = await fetch(`https://backend.picet.in/api/get-paper//${filename}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -92,7 +92,7 @@ const Paper = () => {
     if (!token || role !== "admin") return;
     if (!window.confirm("Are you sure you want to delete this paper?")) return;
     try {
-      const response = await fetch(`http://69.62.76.50:5000/api/delete-research-paper/${rid}`, {
+      const response = await fetch(`https://backend.picet.in/api/delete-research-paper/${rid}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

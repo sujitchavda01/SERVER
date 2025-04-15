@@ -970,7 +970,7 @@ const forgotPassword = async (req, res) => {
             },
         });
 
-        const resetUrl = `http://69.62.76.50:3000/reset-password/${resetToken}`; // Update as needed
+        const resetUrl = `https://evaluation.picet.in/reset-password/${resetToken}`; // Update as needed
         const mailOptions = {
             from:`"PICET" <${process.env.EMAIL}>`,
             to: email,
@@ -1163,8 +1163,8 @@ const generateReport = async (req, res) => {
             return res.status(400).json({ message: "No active session found to generate report." });
         }
 
-        const leftLogoUrl = 'http://69.62.76.50:5000/assets/logo_picet.png';
-        const rightLogoUrl = 'http://69.62.76.50:5000/assets/logo_parul.png';
+        const leftLogoUrl = 'https://backend.picet.in/assets/logo_picet.png';
+        const rightLogoUrl = 'https://backend.picet.in/assets/logo_parul.png';
 
         let htmlContent = `
         <!DOCTYPE html>

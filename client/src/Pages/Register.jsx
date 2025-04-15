@@ -65,7 +65,7 @@ const Signup = () => {
       return;
     }
     try {
-      const response = await fetch("http://69.62.76.50:5000/api/register", {
+      const response = await fetch("https://backend.picet.in/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, domain }),

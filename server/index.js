@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://69.62.76.50:3000', // Update this with your frontend URL
+    origin: process.env.CLIENT_URL || 'https://evaluation.picet.in', // Update this with your frontend URL
     credentials: true,
     methods: ["GET", "POST","DELETE","PUT"],
 }));

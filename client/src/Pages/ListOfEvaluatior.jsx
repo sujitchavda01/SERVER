@@ -11,7 +11,7 @@ const ListOfEvaluator = () => {
     useEffect(() => {
         const fetchEvaluators = async () => {
             try {
-                const response = await axios.get("http://69.62.76.50:5000/api/evaluators", {
+                const response = await axios.get("https://backend.picet.in/api/evaluators", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -32,7 +32,7 @@ const ListOfEvaluator = () => {
 
     const downloadEvaluatorList = async () => {
         try {
-            const response = await axios.get("http://69.62.76.50:5000/api/evaluatorslist-download", {
+            const response = await axios.get("https://backend.picet.in/api/evaluatorslist-download", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

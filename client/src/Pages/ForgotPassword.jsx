@@ -17,7 +17,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        "http://69.62.76.50:5000/api/forgot-password",
+        "https://backend.picet.in/api/forgot-password",
         { email }
       );
       setMessage(response.data.message);

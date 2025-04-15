@@ -46,7 +46,7 @@ const ResetPassword = () => {
         }
 
         try {
-            const response = await axios.post(`http://69.62.76.50:5000/api/reset-password/${token}`, { password });
+            const response = await axios.post(`https://backend.picet.in/api/reset-password/${token}`, { password });
             setSuccess(response.data.message);
             setTimeout(() => navigate("/login"), 3000);
         } catch (err) {

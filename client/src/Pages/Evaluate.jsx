@@ -32,7 +32,7 @@ const EvaluateResearchPaper = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://69.62.76.50:5000/api/rate-research-paper', {
+            const response = await fetch('https://backend.picet.in/api/rate-research-paper', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
