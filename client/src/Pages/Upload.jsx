@@ -52,7 +52,7 @@ const UploadResearchPaper = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/upload-research-paper",
+        "http://69.62.76.50:5000/api/upload-research-paper",
         {
           method: "POST",
           body: formDataToSend,

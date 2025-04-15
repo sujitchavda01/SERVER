@@ -16,7 +16,7 @@ const GivePermission = () => {
   const fetchEvaluators = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/evaluators", {
+      const response = await fetch("http://69.62.76.50:5000/api/evaluators", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -39,7 +39,7 @@ const GivePermission = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:5000/api/approve/${userId}`,
+        `http://69.62.76.50:5000/api/approve/${userId}`,
         {
           method: "POST",
           headers: {
@@ -62,7 +62,7 @@ const GivePermission = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:5000/api/reject/${userId}`,
+        `http://69.62.76.50:5000/api/reject/${userId}`,
         {
           method: "POST",
           headers: {
@@ -94,7 +94,7 @@ const GivePermission = () => {
 
     try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/api/upload-evaluators", {
+        const response = await fetch("http://69.62.76.50:5000/api/upload-evaluators", {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,

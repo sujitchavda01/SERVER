@@ -24,7 +24,7 @@ const AdminPapers = () => {
 
     const fetchPapers = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/get-paper-details", {
+        const response = await fetch("http://69.62.76.50:5000/api/get-paper-details", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         });
@@ -50,7 +50,7 @@ const AdminPapers = () => {
 
   const handleDownload = async (filename) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/get-paper/${filename}`, {
+      const response = await fetch(`http://69.62.76.50:5000/api/get-paper/${filename}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -69,7 +69,7 @@ const AdminPapers = () => {
   const handleDelete = async (rid) => {
     if (!window.confirm("Are you sure you want to delete this paper?")) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/delete-research-paper/${rid}`, {
+      const response = await fetch(`http://69.62.76.50:5000/api/delete-research-paper/${rid}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -101,7 +101,7 @@ const AdminPapers = () => {
   // download excel report 
   const excelReport = async () => {
           try {
-              const response = await axios.get("http://localhost:5000/api/generate-research-report", {
+              const response = await axios.get("http://69.62.76.50:5000/api/generate-research-report", {
                   headers: {
                       Authorization: `Bearer ${token}`,
                   },

@@ -15,7 +15,7 @@ const TopRatedPapers = () => {
                 const token = localStorage.getItem("token");
                 if (!token) throw new Error("Unauthorized: No token found");
 
-                const response = await fetch("http://localhost:5000/api/assigned-papers", {
+                const response = await fetch("http://69.62.76.50:5000/api/assigned-papers", {
                     method: "GET",
                     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
                 });
@@ -87,7 +87,7 @@ const TopRatedPapers = () => {
             }
 
             // Sending papers in the expected format
-            const response = await fetch("http://localhost:5000/api/select-top-papers", {
+            const response = await fetch("http://69.62.76.50:5000/api/select-top-papers", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -113,7 +113,7 @@ const TopRatedPapers = () => {
             const token = localStorage.getItem("token");
             if (!token) throw new Error("Unauthorized: No token found");
 
-            const response = await fetch("http://localhost:5000/api/download-report", {
+            const response = await fetch("http://69.62.76.50:5000/api/download-report", {
                 method: "GET",
                 headers: { "Authorization": `Bearer ${token}` }
             });
