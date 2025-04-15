@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
 const sequelize = new Sequelize("u103533497_picet_api", "u103533497_admin", "Parul.C0nference", {
-  host: srv1669.hstgr.io,
+  host: "srv1669.hstgr.io",
   dialect: "mysql",
   logging: false,
 });
