@@ -158,7 +158,7 @@ router.get('/assigned-papers', authMiddleware, getAssignedPapers);
 
 
 // for evaluator download report for Sesison
-router.get('/download-report', authMiddleware, generateReport);
+router.get('/download-report', generateReport);
 
 // for admin for download whole excel report
 router.get('/generate-research-report', authMiddleware,downloadExcelReport);

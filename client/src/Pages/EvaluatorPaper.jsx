@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { FaFileLines } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router-dom";
 import Banner from "../components/Banner";
-
 import "../Styles/GlobalStyle.css";
 
 const EvaluatorPapers = () => {
@@ -13,7 +12,6 @@ const EvaluatorPapers = () => {
   const evaluatorName = user?.name;
   const navigate = useNavigate();
   const { category } = useParams();
-  console.log(category);
 
   useEffect(() => {
     if (!token) return;
@@ -56,16 +54,7 @@ const EvaluatorPapers = () => {
   const formatDateTime = (dateTime) => {
     if (!dateTime) return "N/A";
     const date = new Date(dateTime);
-    return date
-      .toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .replace(/,/g, "");
+    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')} ${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')}:${String(date.getUTCSeconds()).padStart(2, '0')}`;
   };
 
   const handleEvaluation = (paperId) => {
@@ -80,25 +69,25 @@ const EvaluatorPapers = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Unauthorized: No token found");
-  
+
       const response = await fetch("https://backend.picet.in/api/download-report", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (!response.ok) throw new Error("Error generating report");
-  
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "Session_Report.pdf"; // Specify the file name for the download
+      a.download = "Session_Report.pdf";
       document.body.appendChild(a);
-      a.click(); // Trigger the download
-      window.URL.revokeObjectURL(url); // Clean up
+      a.click();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      alert(`Error generating report: ${error.message}`); // Alert user of the error
-      console.error("Report error:", error); // Log any report generation errors
+      alert(`Error generating report: ${error.message}`);
+      console.error("Report error:", error);
     }
   };
 
@@ -145,7 +134,7 @@ const EvaluatorPapers = () => {
             <th>Domain</th>
             <th>Paper File</th>
             <th>Total Score</th>
-            <th>Recommended Best Paper</th> {/* New Column */}
+            <th>Recommended Best Paper</th>
             <th>Session Start</th>
             <th>Session End</th>
             <th>Evaluation Status</th>
@@ -168,7 +157,7 @@ const EvaluatorPapers = () => {
                   />
                 </td>
                 <td>{paper.total_score ?? "N/A"}</td>
-                <td>{paper.recommend_best_paper ? "Yes" : "No"}</td> {/* New Column Data */}
+                <td>{paper.recommend_best_paper ? "Yes" : "No"}</td>
                 <td>{formatDateTime(paper.session_start)}</td>
                 <td>{formatDateTime(paper.session_end)}</td>
                 <td>
@@ -259,3 +248,4 @@ const EvaluatorPapers = () => {
 };
 
 export default EvaluatorPapers;
+

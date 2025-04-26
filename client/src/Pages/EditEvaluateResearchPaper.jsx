@@ -109,11 +109,13 @@ const EditResearchPaperRating = () => {
             <div className="evaluate-container">
                 {loading ? <p>Loading...</p> : (
                     <form onSubmit={handleSubmit}>
-                        {["Presenter's effectiveness in conveying research details",
-                          "Originality, significance, and contribution of research",
-                          "Structure, logical flow, and clarity of the presentation",
-                          "Communication skills, teamwork, and visual aids usage",
-                          "Organization, section sequence, and time management effectiveness"]
+                        {[ 
+                        "How would you rate the presenter's effectiveness in conveying the problem statement, purpose, methodology, results, and implications of the research?",
+                        "How effectively did the presenter showcase the originality, novelty, and significance of the research findings, emphasizing their contribution, to the field through mathematical models, results, and a thorough conclusion that includes project claims, verification, validation, and diagnostics?",
+                        "How well-structured was the presentation, with a clear introduction, logical flow of ideas, proper use and representation of data, and a coherent conclusion? Additionally, how effectively did it include elements such as a proposed model, flowcharts, and a comprehensive discussion of implementation and analysis results?",
+                        "How effectively did the presenter demonstrate communication skills, teamwork, use of visual aids to enhance understanding, and convey confidence and enthusiasm during the presentation?",
+                        "How effective was the organization of the presentation and sequence of sections, and how was the overall format and style of the presentation effective in managing time efficiently?"
+                    ]
                         .map((question, index) => (
                             <div className="form-group" key={index}>
                                 <label>{question}</label>

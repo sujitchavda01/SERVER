@@ -14,7 +14,6 @@ app.use(cors({
     methods: ["GET", "POST","DELETE","PUT"],
 }));
 
-
 // Serve static files from the assets directory
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
@@ -37,6 +36,7 @@ app.get('/', (req, res) => {
     res.send('Hello, API is running 🚀');
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`🚀 Server running on http://69.62.76.50:${PORT}`);
 });
+server.setTimeout(300000);

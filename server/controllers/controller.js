@@ -12,9 +12,6 @@ const moment2 = require("moment-timezone");
 const { Sequelize } = require("sequelize");
 
 
-const pdf = require('html-pdf');
-
-
 // Register
 const register = async (req, res) => {
     try {
@@ -135,7 +132,7 @@ const uploadEvaluators = async (req, res) => {
 
                                 <p style="font-size: 16px; line-height: 1.5;">Please log in and change your password as soon as possible.</p>
                                 <div style="text-align: center; margin: 20px 0;">
-                                    <a href="#" style="background: #0047ab; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; width: 80%; max-width: 200px; text-align: center;">Login</a>
+                                    <a href="https://evaluation.picet.in/" style="background: #0047ab; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block; width: 80%; max-width: 200px; text-align: center;">Login</a>
                                 </div>
                                 <p style="font-size: 16px; line-height: 1.5;">We look forward to your valuable contributions!</p>
                             </div>
@@ -1094,158 +1091,14 @@ const deleteAccount = async (req, res) => {
 
 
 
+
+
+
+
 const generateReport = async (req, res) => {
-    try {
-        if (!req.user || req.user.role !== 'evaluator') {
-            return res.status(403).json({ message: 'Access denied. Evaluators only.' });
-        }
-
-        const evaluatorId = req.user.uid;
-        const evaluatorName = req.user.name;
-        const evaluatorEmail = req.user.email;
-        const now = moment2().tz("Asia/Kolkata");
-
-        const researchPapers = await ResearchPaper.findAll({
-            attributes: ['rid', 'title', 'author_name', 'post_date', 'domain'],
-            include: [
-                {
-                    model: EvaluatorAssignment,
-                    attributes: ['session_start', 'session_end'],
-                    where: { uid: evaluatorId },
-                    required: true
-                },
-                {
-                    model: ResearchPaperRating,
-                    attributes: ['q1', 'q2', 'q3', 'q4', 'q5', 'recommend_best_paper'],
-                    where: { uid: evaluatorId },
-                    required: false
-                }
-            ]
-        });
-
-        const formatDateOnly = (date) => moment2(date).tz("Asia/Kolkata").format("DD-MM-YYYY");
-        const formatTime = (date) => moment2(date).tz("Asia/Kolkata").format("hh:mm A");
-
-        let groupedSessions = {};
-
-        researchPapers.forEach(paper => {
-            const sessionStart = moment2(paper.EvaluatorAssignments[0].session_start).tz("Asia/Kolkata");
-            const sessionEnd = moment2(paper.EvaluatorAssignments[0].session_end).tz("Asia/Kolkata").add(60, 'minutes');
-
-            if (now.isBetween(sessionStart, sessionEnd)) {
-                const sessionSlot = `${formatTime(sessionStart)} - ${formatTime(sessionEnd)}`;
-                let recommendation = 'NA';
-                let totalScore = 'NA';
-                
-                if (paper.ResearchPaperRatings.length > 0) {
-                    const rating = paper.ResearchPaperRatings[0];
-                    totalScore = (rating.q1 || 0) + (rating.q2 || 0) + (rating.q3 || 0) + (rating.q4 || 0) + (rating.q5 || 0);
-                    recommendation = rating.recommend_best_paper === true ? 'Yes' : (rating.recommend_best_paper === false ? 'No' : 'NA');
-                }
-
-                if (!groupedSessions[sessionSlot]) {
-                    groupedSessions[sessionSlot] = [];
-                }
-
-                groupedSessions[sessionSlot].push({
-                    rid: paper.rid,
-                    title: paper.title,
-                    author: paper.author_name,
-                    domain: paper.domain,
-                    post_date: formatDateOnly(paper.post_date),
-                    totalScore,
-                    recommendation
-                });
-            }
-        });
-
-        if (Object.keys(groupedSessions).length === 0) {
-            return res.status(400).json({ message: "No active session found to generate report." });
-        }
-
-        const leftLogoUrl = 'https://backend.picet.in/assets/logo_picet.png';
-        const rightLogoUrl = 'https://backend.picet.in/assets/logo_parul.png';
-
-        let htmlContent = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Session-wise Research Paper Report</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                h2 { margin: 0; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #0047ab; color: white; }
-                tr:nth-child(even) { background-color: #f2f2f2; }
-                .logo-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; position: relative; }
-                .logo { width: 150px; height: auto; }
-                .title { flex-grow: 1; text-align: center; font-size: 24px; margin: 0; }
-                .right-logo { position: absolute; right: 0; top: 0;width: 180px; height: auto; }
-                .signature-container { margin-top: 50px; text-align: right; font-size: 16px; font-weight: bold; }
-                .signature-line { border-top: 1px solid black; width: 200px; margin-top: 5px; display: inline-block; }
-            </style>
-        </head>
-        <body>
-            <div class="logo-container">
-                <img src="${leftLogoUrl}" alt="Left Logo" class="logo">
-                <h2 class="title">Research Paper Evaluation Report</h2>
-                <img src="${rightLogoUrl}" alt="Right Logo" class="logo right-logo">
-            </div>
-            <p>Generated On: ${formatDateOnly(new Date())}</p>
-            <p>Name: ${evaluatorName}</p>
-            <p>Email: ${evaluatorEmail}</p>`;
-
-        Object.keys(groupedSessions).forEach(session => {
-            htmlContent += `
-            <h3>Session: ${session}</h3>
-            <table>
-                <tr>
-                    <th>Paper ID</th>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Domain</th>
-                    <th>Posted Date</th>
-                    <th>Total Score</th>
-                    <th>Recommend Best Paper</th>
-                </tr>`;
-            groupedSessions[session].forEach(paper => {
-                htmlContent += `
-                <tr>
-                    <td>${paper.rid}</td>
-                    <td>${paper.title}</td>
-                    <td>${paper.author}</td>
-                    <td>${paper.domain}</td>
-                    <td>${paper.post_date}</td>
-                    <td>${paper.totalScore}</td>
-                    <td>${paper.recommendation}</td>
-                </tr>`;
-            });
-            htmlContent += `</table>`;
-        });
-
-        htmlContent += `
-            <div class="signature-container">
-                <span class="signature-line"></span><br>
-                Signature
-            </div>
-        </body>
-        </html>`;
-
-        const timestamp = Date.now();
-        const pdfFilePath = path.join(__dirname, `../uploads/reports/session_report_${timestamp}.pdf`);
-
-        pdf.create(htmlContent).toFile(pdfFilePath, (err, resFile) => {
-            if (err) return res.status(500).json({ message: 'Error generating report' });
-            res.download(pdfFilePath, `session_report_${timestamp}.pdf`, () => fs.unlink(pdfFilePath, () => {}));
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
+    console.log("Hi");
+    return res.status(200).json({ message: 'Hello World' });
 };
-
 
 
 
@@ -1335,7 +1188,7 @@ const downloadExcelReport = async (req, res) => {
                 const rating = paper.ResearchPaperRatings.find(r => r.uid === evaluator.id);
 
                 // Debugging: Check if ratings exist
-                console.log(`Paper ID: ${paper.rid}, Evaluator: ${evaluator.name}, Rating: ${rating ? JSON.stringify(rating) : 'No Rating Found'}`);
+                // console.log(`Paper ID: ${paper.rid}, Evaluator: ${evaluator.name}, Rating: ${rating ? JSON.stringify(rating) : 'No Rating Found'}`);
 
                 // Get individual ratings or 'NA'
                 const effectiveness = rating ? rating.q1 : 'NA';

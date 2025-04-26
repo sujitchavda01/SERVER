@@ -100,7 +100,7 @@ const Home = () => {
     <div class="right-section">
         <div class="partners-section">
             <div class="partner-images">
-                <img src="Assets/goals.jpg" alt="Goals" class="goal-img" />
+                <img src="Assets/goals.JPG" alt="Goals" class="goal-img" />
                 <img src="Assets/logo_picet.png" alt="PICET" class="picet-logo" />
             </div>
             <h3>Associated Partners</h3>
