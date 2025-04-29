@@ -24,6 +24,10 @@ const User = sequelize.define(
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     resetPasswordToken: { type: DataTypes.STRING, allowNull: true },
     resetPasswordExpires: { type: DataTypes.DATE, allowNull: true },
+    faculty: {
+      type: DataTypes.ENUM("Internal", "External"),
+      defaultValue: "Internal",
+    },
   },
   {
     tableName: "users",

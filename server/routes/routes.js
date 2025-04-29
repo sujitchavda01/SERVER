@@ -112,7 +112,7 @@ router.get('/get-paper-details', authMiddleware, getResearchPaperDetails);
 //     {
 //         "rid": 12345,
 //         "title": "AI vs ML",
-//         "author_name": "Rajesh",
+//         "author_name": "Ax",
 //         "post_date": "2025-03-10T13:21:19.000Z",
 //         "paper_file": "1741612879503.pdf",
 //         "domain": "AI",
@@ -121,7 +121,7 @@ router.get('/get-paper-details', authMiddleware, getResearchPaperDetails);
 //                 "eaid": 5,
 //                 "User": {
 //                     "uid": 2,
-//                     "name": "Nishtha",
+//                     "name": "Abc",
 //                     "email": "n@gmail.com"
 //                 }
 //             }
@@ -158,7 +158,7 @@ router.get('/assigned-papers', authMiddleware, getAssignedPapers);
 
 
 // for evaluator download report for Sesison
-router.get('/download-report', generateReport);
+router.get('/download-report',authMiddleware, generateReport);
 
 // for admin for download whole excel report
 router.get('/generate-research-report', authMiddleware,downloadExcelReport);

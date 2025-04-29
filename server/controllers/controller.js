@@ -11,6 +11,12 @@ const moment = require('moment');
 const moment2 = require("moment-timezone");
 const { Sequelize } = require("sequelize");
 
+// Check and define ReadableStream if not already available
+if (typeof ReadableStream === 'undefined') {
+    global.ReadableStream = require('stream/web').ReadableStream;
+}
+const puppeteer = require('puppeteer');
+
 
 // Register
 const register = async (req, res) => {
@@ -73,9 +79,10 @@ const uploadEvaluators = async (req, res) => {
             const email = row["Email"]?.toString().trim();
             const name = row["Name"]?.toString().trim();
             const domain = row["Domain"]?.toString().trim();
+            const faculty = row["Faculty"]?.toString().trim() || "Internal";
             
-            if (!email || !name || !domain) {
-                return res.status(400).json({ message: 'Missing required fields: Email, Name, and Domain are mandatory' });
+            if (!email || !name || !domain || !faculty) {
+                return res.status(400).json({ message: 'Missing required fields: Email, Name, Domain and Faculty(Internal/External) are mandatory' });
             }
 
             const existingUser = await User.findOne({ where: { email } });
@@ -90,6 +97,10 @@ const uploadEvaluators = async (req, res) => {
                 }
                 if (existingUser.domain !== domain) {
                     updates.domain = domain;
+                    updateRequired = true;
+                }
+                if (existingUser.faculty !== faculty) {
+                    updates.faculty = faculty; 
                     updateRequired = true;
                 }
 
@@ -107,7 +118,8 @@ const uploadEvaluators = async (req, res) => {
                     name,
                     role: 'evaluator',
                     domain,
-                    approval_status: 'approved'
+                    approval_status: 'approved',
+                    faculty
                 });
 
                 const mailOptions = {
@@ -751,9 +763,9 @@ const checkIfRated = async (req, res) => {
 const getAssignedPapers = async (req, res) => {
     try {
         // Ensure only evaluators can access this route
-        if (req.user.role !== "evaluator") {
-            return res.status(403).json({ message: "Access denied. Only evaluators can access this route." });
-        }
+        // if (req.user.role !== "evaluator") {
+        //     return res.status(403).json({ message: "Access denied. Only evaluators can access this route." });
+        // }
 
         const evaluatorId = req.user.uid; // Get the logged-in evaluator's ID
 
@@ -1096,8 +1108,245 @@ const deleteAccount = async (req, res) => {
 
 
 const generateReport = async (req, res) => {
-    console.log("Hi");
-    return res.status(200).json({ message: 'Hello World' });
+    try {
+        if (!req.user || req.user.role !== 'evaluator') {
+            return res.status(403).json({ message: 'Access denied. Evaluators only.' });
+        }
+
+        const evaluatorId = req.user.uid;
+        const evaluatorName = req.user.name;
+        const evaluatorEmail = req.user.email;
+        const now = moment2().tz("Asia/Kolkata");
+
+        const researchPapers = await ResearchPaper.findAll({
+            attributes: ['rid', 'title', 'author_name', 'post_date', 'domain'],
+            include: [
+                {
+                    model: EvaluatorAssignment,
+                    attributes: ['session_start', 'session_end'],
+                    where: { uid: evaluatorId },
+                    required: true
+                },
+                {
+                    model: ResearchPaperRating,
+                    attributes: ['q1', 'q2', 'q3', 'q4', 'q5', 'recommend_best_paper'],
+                    where: { uid: evaluatorId },
+                    required: false
+                }
+            ]
+        });
+
+        const formatDateOnly = (date) => moment2(date).tz("Asia/Kolkata").format("DD-MM-YYYY");
+        const formatTime = (date) => moment2(date).tz("Asia/Kolkata").format("hh:mm A");
+
+        let groupedSessions = {};
+
+        researchPapers.forEach(paper => {
+            const sessionStart = moment2(paper.EvaluatorAssignments[0].session_start).tz("Asia/Kolkata");
+            const sessionEnd = moment2(paper.EvaluatorAssignments[0].session_end).tz("Asia/Kolkata").add(0, 'minutes');
+
+            if (now.isBetween(sessionStart, sessionEnd)) {
+                const sessionSlot = `${formatTime(sessionStart)} - ${formatTime(sessionEnd)}`;
+                let recommendation = 'NA';
+                let totalScore = 'NA';
+
+                if (paper.ResearchPaperRatings.length > 0) {
+                    const rating = paper.ResearchPaperRatings[0];
+                    totalScore = (rating.q1 || 0) + (rating.q2 || 0) + (rating.q3 || 0) + (rating.q4 || 0) + (rating.q5 || 0);
+                    recommendation = rating.recommend_best_paper === true ? 'Yes' : (rating.recommend_best_paper === false ? 'No' : 'NA');
+                }
+
+                if (!groupedSessions[sessionSlot]) {
+                    groupedSessions[sessionSlot] = [];
+                }
+
+                groupedSessions[sessionSlot].push({
+                    rid: paper.rid,
+                    title: paper.title,
+                    author: paper.author_name,
+                    domain: paper.domain,
+                    post_date: formatDateOnly(paper.post_date),
+                    totalScore,
+                    recommendation
+                });
+            }
+        });
+
+        if (Object.keys(groupedSessions).length === 0) {
+            return res.status(400).json({ message: "No active session found to generate report." });
+        }
+        
+        const leftLogoUrl = 'https://backend.picet.in/assets/logo_picet.png';
+        const rightLogoUrl = 'https://backend.picet.in/assets/logo_parul.png';
+
+        let htmlContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Research Paper Report</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    font-size: 14px;
+                }
+
+                h2 {
+                    margin: 0;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                    table-layout: auto; /* Allow column width to adjust based on content */
+                }
+
+                th, td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: left;
+                    vertical-align: top;
+                    word-break: break-word;
+                    white-space: normal;
+                    hyphens: auto;
+                }
+
+                th {
+                    background-color: #0047ab;
+                    color: white;
+                    font-size: 14px;
+                    min-width: 80px;       
+                    white-space: nowrap;   /* Keep headers in one line */
+                }
+
+                td {
+                    font-size: 13px;
+                }
+
+                tr:nth-child(even) {
+                    background-color: #f2f2f2;
+                }
+
+                /* Make long titles wrap but not overflow layout */
+                th:nth-child(2), td:nth-child(2) {
+                    max-width: 300px;
+                    white-space: normal;
+                }
+
+                .logo-container {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                }
+
+                .logo {
+                    width: 150px;
+                }
+
+                .title {
+                    flex: 1;
+                    text-align: center;
+                    font-size: 24px;
+                    font-weight: bold;
+                }
+
+                .signature-container {
+                    margin-top: 50px;
+                    text-align: right;
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+
+                .signature-line {
+                    border-top: 1px solid black;
+                    width: 200px;
+                    margin-top: 5px;
+                    display: inline-block;
+                }
+            </style>
+
+        </head>
+        <body>
+            <div class="logo-container">
+                <img src="${leftLogoUrl}" class="logo" />
+                <h2 class="title">Research Paper Evaluation Report</h2>
+                <img src="${rightLogoUrl}" class="logo" />
+            </div>
+            <p>Generated On: ${formatDateOnly(new Date())}</p>
+            <p>Name: ${evaluatorName}</p>
+            <p>Email: ${evaluatorEmail}</p>`;
+
+        Object.keys(groupedSessions).forEach(session => {
+            htmlContent += `
+            <h3>Session: ${session}</h3>
+            <table>
+                <tr>
+                    <th>Paper ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Domain</th>
+                    <th>Posted Date</th>
+                    <th>Total Score</th>
+                    <th>Recommend Best Paper</th>
+                </tr>`;
+            groupedSessions[session].forEach(paper => {
+                htmlContent += `
+                <tr>
+                    <td>${paper.rid}</td>
+                    <td>${paper.title}</td>
+                    <td>${paper.author}</td>
+                    <td>${paper.domain}</td>
+                    <td>${paper.post_date}</td>
+                    <td>${paper.totalScore}</td>
+                    <td>${paper.recommendation}</td>
+                </tr>`;
+            });
+            htmlContent += `</table>`;
+        });
+
+        htmlContent += `
+            <div class="signature-container">
+                <span class="signature-line"></span><br>
+                Signature
+            </div>
+        </body>
+        </html>`;
+
+        const timestamp = Date.now();
+        const pdfFilePath = path.join(__dirname, `../uploads/reports/session_report_${timestamp}.pdf`);
+
+        // const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        // const page = await browser.newPage();
+        // await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        // await page.pdf({ path: pdfFilePath, format: 'A4', printBackground: true });
+        // await browser.close();
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Report generation timeout")), 2 * 60 * 1000)
+        );
+        
+        await Promise.race([
+            (async () => {
+                const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+                const page = await browser.newPage();
+                await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+                await page.pdf({ path: pdfFilePath, format: 'A4', printBackground: true });
+                await browser.close();
+            })(),
+            timeoutPromise
+        ]);
+        
+
+        res.download(pdfFilePath, `session_report_${timestamp}.pdf`, () => {
+            fs.unlink(pdfFilePath, () => {});
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error during report generation' });
+    }
 };
 
 
@@ -1126,7 +1375,7 @@ const downloadExcelReport = async (req, res) => {
                     attributes: ['session_start', 'session_end', 'uid'],
                     include: [{
                         model: User,
-                        attributes: ['name', 'email'],
+                        attributes: ['name', 'email','faculty'],
                         where: { role: 'evaluator' },
                         required: false
                     }],
@@ -1156,6 +1405,7 @@ const downloadExcelReport = async (req, res) => {
                     'Post Date': paper.post_date,
                     'Evaluator Name': 'No Evaluator Assigned',
                     'Evaluator Email': 'N/A',
+                    'Faculty': 'N/A',
                     'Session Start': 'N/A',
                     'Session End': 'N/A',
                     'Effectiveness in conveying research': 'NA',
@@ -1174,12 +1424,14 @@ const downloadExcelReport = async (req, res) => {
                     id: assignment.uid,
                     name: assignment.User.name,
                     email: assignment.User.email,
+                    faculty: assignment.User.faculty || 'N/A',
                     sessionStart: assignment.session_start || 'N/A',
                     sessionEnd: assignment.session_end || 'N/A',
                 } : {
                     id: null,
                     name: 'Not Assigned',
                     email: 'Not Assigned',
+                    faculty: 'N/A',
                     sessionStart: 'N/A',
                     sessionEnd: 'N/A',
                 };
@@ -1216,6 +1468,7 @@ const downloadExcelReport = async (req, res) => {
                     'Post Date': paper.post_date,
                     'Evaluator Name': evaluator.name,
                     'Evaluator Email': evaluator.email,
+                    'Faculty': evaluator.faculty,
                     'Session Start': evaluator.sessionStart,
                     'Session End': evaluator.sessionEnd,
                     'Effectiveness in conveying research': effectiveness,

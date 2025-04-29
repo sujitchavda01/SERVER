@@ -189,11 +189,34 @@ const Header = () => {
           </div>
         )}
 
-        {role === "admin" && (
-          <Link to="/drive-link" className="nav-item">
-            Upload Format
-          </Link>
-        )}
+{role === "admin" && (
+  <Link
+    to="#"
+    onClick={(e) => {
+      e.preventDefault();
+      const fileUrls = [
+        '/Assets/Assign Papers.xlsx',
+        '/Assets/Evaluator List Upload.xlsx'
+      ];
+
+      fileUrls.forEach((url) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = url.split('/').pop(); // Automatically set the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    }}
+    className="nav-item"
+    style={{ textDecoration: "none", cursor: "pointer" }}
+  >
+    Upload Format
+  </Link>
+)}
+
+
+
         {/* Upload Button - Only for Admin */}
         {role === "admin" && (
           <Link to="/upload" className="button button-small">
