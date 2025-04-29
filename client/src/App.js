@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 import Home from "./Pages/Home.jsx";
 import Login from "./Pages/Login.jsx";
@@ -18,9 +20,12 @@ import ProtecteRoute from "./components/ProtecteRoute.jsx";
 import ForgotPassword from "./Pages/ForgotPassword.jsx";
 import ResetPassword from "./Pages/ResetPassword.jsx";
 import TopRatedPapers from "./Pages/TopRatedPapers.jsx";
+import useAutoLogoutLogic from "./components/useAutoLogoutLogic.jsx"; 
 
 function Layout() {
   const token = localStorage.getItem("token"); // Check if logged in
+
+  useAutoLogoutLogic();
 
   return (
     <>
@@ -36,6 +41,7 @@ function Layout() {
 function App() {
   return (
     <Router>
+      <ToastContainer />
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
