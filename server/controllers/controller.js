@@ -1281,7 +1281,7 @@ const generateReport = async (req, res) => {
 
         Object.keys(groupedSessions).forEach(session => {
             htmlContent += `
-            <h3>Session: ${session}</h3>
+            
             <table>
                 <tr>
                     <th>Paper ID</th>
