@@ -19,7 +19,7 @@ const Footer = () => {
       >
         <div className="footer-section">
           <img src="/Assets/logo_picet.png" alt="PiCET" className="logo" />
-          <p>
+          <p  style={{ textAlign: 'justify'}}>
             The PiCET-2025 has an objective of creating an international forum
             for academicians, researchers, and scientists across the globe to
             discuss contemporary research status and advanced techniques to
