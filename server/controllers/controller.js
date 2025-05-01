@@ -165,7 +165,10 @@ const uploadEvaluators = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     } finally {
-        fs.unlinkSync(filePath);  // Ensure file is deleted whether success or failure
+        // fs.unlinkSync(filePath);  // Ensure file is deleted whether success or failure
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
     }
 };
 
