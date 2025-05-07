@@ -114,7 +114,7 @@ ResearchPaper.hasMany(ResearchPaperRating, { foreignKey: "rid" });
 ResearchPaperRating.belongsTo(ResearchPaper, { foreignKey: "rid" });
 
 sequelize
-  .sync({ alter: false })
+  .sync({ alter: true })
   .then(() => console.log("Database & tables checked!"))
   .catch((error) => console.error("Error syncing database: ", error));
 
